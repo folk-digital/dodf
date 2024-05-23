@@ -31,5 +31,5 @@ jobs:
         uses: githubocto/flat@v3.4.0
         with:
           http_url: https://www.dodf.df.gov.br/index/jornal-json
-          downloaded_filename: data/dodf_${{ steps.builddate.outputs.dateref }}.json
+          downloaded_filename: dodf_${{ steps.builddate.outputs.dateref }}.json
 
