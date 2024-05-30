@@ -1,0 +1,21 @@
+name: Workflow Tests 
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+
+jobs:
+  scheduled:
+    runs-on: ubuntu-latest
+    steps:
+      - name: run curl
+        run: | 
+          status=$(curl -s --url https://www.dodf.df.gov.br/index/jornal-json | jq -r '.lstJornalDia'); echo "status=$status" >> $GITHUB_OUTPUT
+        id: req
+
+      - name: test 
+        run: echo "Result is ${{ steps.req.outputs.status }} "
+
