@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: run curl
         run: | 
-          status=$(curl -s --url https://www.dodf.df.gov.br/index/jornal-json | jq ); echo "status=$status" >> $GITHUB_OUTPUT
+          status=$(curl -s --url https://www.dodf.df.gov.br/index/jornal-json | jq -r '.lstJornalDia[0]'); echo "status=$status" >> $GITHUB_OUTPUT
         id: req
 
       - name: test 
