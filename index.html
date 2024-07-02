@@ -19,6 +19,15 @@
       display: flex;
       justify-content: center;
       gap: 2px;
+      align-items: center;
+    }
+    
+    #fsetJournals {
+      display: none
+    }
+    
+    #alljournals:checked + #fsetJournals {
+      display: block
     }
 
     article {
@@ -26,6 +35,12 @@
       padding: 5px;
       margin: 5px;
       border: 1px solid gray;
+      &:first-child {
+        text-align: center
+        a {
+          background-color: bisque;
+        }
+      }
     }
   </style>
   
@@ -53,7 +68,7 @@
                 // console.log(doc.texto)
                 document.getElementById('resultado').insertAdjacentHTML('beforeend', `
                 <article>
-                <a href="https://${dodf.json.linkJornal}" target="blank_"  style="text-align:justify;">${dodf.json.tituloSangria}</a>
+                <p><a href="https://${dodf.json.linkJornal}" target="blank_">${dodf.json.tituloSangria}</a></p>
                 ${doc.texto}
                 </article>`)
               }
@@ -78,7 +93,10 @@
   <fieldset>
     <legend>Pesquisa</legend>
     <!-- <label for="termos">termos:</label> -->
-    <input type="text" name="termos" id="termos">
+    <label for="alljournals" style="">Search All</label><input type="checkbox" name="alljournals" id="alljournals"><fieldset id="fsetJournals">
+    <legend>Edições Anteriores</legend>
+    <select multiple="" style="max-width:90%;" id="journals" name="journals"></select>  
+  </fieldset><input type="text" name="termos" id="termos">
     <br>
     <button id="btnSearch" onclick="searchDODF()">Pesquisar!</button>
   </fieldset>
