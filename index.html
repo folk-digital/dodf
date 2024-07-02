@@ -35,8 +35,8 @@
       padding: 5px;
       margin: 5px;
       border: 1px solid gray;
-      &:first-child {
-        text-align: center
+      & p:first-child {
+        text-align: center;
         a {
           background-color: bisque;
         }
@@ -45,12 +45,32 @@
   </style>
   
   <script>
-
+    
   (async () => {
     dodf = await fetch("https://dodf.df.gov.br/index/jornal-json").then(r => r.json())
     document.getElementById('termos').value = "Políticas Públicas e Gestão Governamental"
     document.getElementById("btnSearch").click()
+    
+    journals = await fetch('https://api.github.com/repos/folk-digital/dodf/contents/data')
+    .then(r => r.json())
+    .then(j => j.filter(e => e.name.endsWith('.json')))
+    .then(f => f.map(e => e.path))
+    journals.forEach(path => document.getElementById('journals').insertAdjacentHTML('beforeend',`<option selected=true value="${path}">${path.split('/')[1]}</option>`))
   })();
+
+  var checkbox_alljournals = document.getElementById('alljournals');
+
+  checkbox_alljournals.addEventListener('change', function() {
+    if (this.checked) {
+      console.log("Checkbox is checked..");
+      queryJournals = [...document.querySelectorAll('#journals option:checked')].map(o => o.value)
+      console.log(queryJournals)
+    } else {
+      console.log("Checkbox is not checked..");
+    }
+  });
+
+  
 
   function searchDODF() {
     const txt = document.getElementById('termos').value
@@ -78,6 +98,47 @@
       } else {
         document.body.innerHTML = document.body.innerHTML.replaceAll(txt, `<span style="background-color: yellow;">${txt}</span>`)
       }
+    } else {
+      console.log("Input VAZIO!")
+      document.querySelector("#NadaPesquisado p").innerText = "Input VAZIO!"
+      alert("Insira os TERMOS da pesquisa!")
+    }
+
+  }
+
+      function searchDODFPrev() {
+    const txt = document.getElementById('termos').value
+
+    if (txt !== "") {
+      document.getElementById("resultado").innerHTML = ""
+      for (const [idx, url] of queryJournals.entries()) {
+    const dodf = await fetch(url).then(r => r.json());
+//     console.log(`Received Todo ${idx+1}:`, todo);
+        let counter = 0
+	Object.values(dodf.json.INFO)
+        .forEach(sessao => Object.values(sessao)
+          .forEach(org => Object.values(org.documentos)
+            .forEach(doc => {
+              if (doc.texto.includes(txt)) {
+                counter++
+                doc.texto.replaceAll(txt, `<span style="background-color: yellow;">${txt}</span>`)
+                // console.log(doc.texto)
+                document.getElementById('resultado').insertAdjacentHTML('beforeend', `
+                <article>
+                <p><a href="https://${dodf.json.linkJornal}" target="blank_">${dodf.json.tituloSangria}</a></p>
+                ${doc.texto}
+                </article>`)
+              }
+            })))
+      if (counter == 0) {
+        document.querySelector("#NadaPesquisado p").innerText = "Nenhum resultado encontrado!"
+      } else {
+        document.body.innerHTML = document.body.innerHTML.replaceAll(txt, `<span style="background-color: yellow;">${txt}</span>`)
+	console.log(`${dodf.json.tituloSangria} => ${counter} resultados encontrados!`)
+      }
+  }
+
+  console.log('Finished!');
     } else {
       console.log("Input VAZIO!")
       document.querySelector("#NadaPesquisado p").innerText = "Input VAZIO!"
