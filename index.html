@@ -49,6 +49,7 @@
 
         (async () => {
             dodf = await fetch("https://dodf.df.gov.br/index/jornal-json").then(r => r.json())
+            console.log('Loaded DODF(Today)!')
         })();
 
         function searchDODF() {
@@ -151,16 +152,17 @@
     </fieldset>
 </body>
 <script>
-    document.getElementById('termos').value = "Políticas Públicas e Gestão Governamental"
-    document.getElementById("btnSearch").click()
+    document.getElementById('termos').value = "Políticas Públicas e Gestão Governamental";
+    document.getElementById("btnSearch").click();
 
-    (async () => {
+    async storeAllJournals() {
             journals = await fetch('https://api.github.com/repos/folk-digital/dodf/contents/data')
                 .then(r => r.json())
                 .then(j => j.filter(e => e.name.endsWith('.json')))
                 .then(f => f.map(e => e.path))
             journals.forEach(path => document.getElementById('journals').insertAdjacentHTML('beforeend', `<option selected=true value="${path}">${path.split('/')[1]}</option>`))
-        })();
+            console.log('Select AllJournals STORED!')
+        }; storeAllJournals()
 
         var checkbox_alljournals = document.getElementById('alljournals');
 
@@ -171,6 +173,7 @@
                 console.log(queryJournals)
             } else {
                 console.log("Checkbox is not checked..");
+                storeAllJournals()
             }
         });
 
