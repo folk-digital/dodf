@@ -1,177 +1,180 @@
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Resultado Pesquisa - DODF</title>
-  <style>
-    body {
-      margin: 50px;
-      background-color: ghostwhite;
-      font-family: Helvetica;
-      line-height: 1;
-    }
-
-    fieldset {
-      background-color: gainsboro;
-      margin: 10px 0px;
-      display: flex;
-      justify-content: center;
-      gap: 2px;
-      align-items: center;
-    }
-    
-    #fsetJournals {
-      display: none
-    }
-    
-    #alljournals:checked + #fsetJournals {
-      display: block
-    }
-
-    article {
-      background-color: white;
-      padding: 5px;
-      margin: 5px;
-      border: 1px solid gray;
-      & p:first-child {
-        text-align: center;
-        a {
-          background-color: bisque;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado Pesquisa - DODF</title>
+    <style>
+        body {
+            margin: 50px;
+            background-color: ghostwhite;
+            font-family: Helvetica;
+            line-height: 1;
         }
-      }
-    }
-  </style>
-  
-  <script>
-    
-  (async () => {
-    dodf = await fetch("https://dodf.df.gov.br/index/jornal-json").then(r => r.json())
-    document.getElementById('termos').value = "Políticas Públicas e Gestão Governamental"
-    document.getElementById("btnSearch").click()
-    
-    journals = await fetch('https://api.github.com/repos/folk-digital/dodf/contents/data')
-    .then(r => r.json())
-    .then(j => j.filter(e => e.name.endsWith('.json')))
-    .then(f => f.map(e => e.path))
-    journals.forEach(path => document.getElementById('journals').insertAdjacentHTML('beforeend',`<option selected=true value="${path}">${path.split('/')[1]}</option>`))
-  })();
 
-  var checkbox_alljournals = document.getElementById('alljournals');
+        fieldset {
+            background-color: gainsboro;
+            margin: 10px 0px;
+            display: flex;
+            justify-content: center;
+            gap: 2px;
+            align-items: center;
+        }
 
-  checkbox_alljournals.addEventListener('change', function() {
-    if (this.checked) {
-      console.log("Checkbox is checked..");
-      queryJournals = [...document.querySelectorAll('#journals option:checked')].map(o => o.value)
-      console.log(queryJournals)
-    } else {
-      console.log("Checkbox is not checked..");
-    }
-  });
+        #fsetJournals {
+            display: none
+        }
 
-  
+        #alljournals:checked+#fsetJournals {
+            display: block
+        }
 
-  function searchDODF() {
-    const txt = document.getElementById('termos').value
+        article {
+            background-color: white;
+            padding: 5px;
+            margin: 5px;
+            border: 1px solid gray;
 
-    if (txt !== "") {
-      document.getElementById("resultado").innerHTML = ""
-      let counter = 0
-      Object.values(dodf.json.INFO)
-        .forEach(sessao => Object.values(sessao)
-          .forEach(org => Object.values(org.documentos)
-            .forEach(doc => {
-              if (doc.texto.includes(txt)) {
-                counter++
-                doc.texto.replaceAll(txt, `<span style="background-color: yellow;">${txt}</span>`)
-                // console.log(doc.texto)
-                document.getElementById('resultado').insertAdjacentHTML('beforeend', `
-                <article>
-                <p><a href="https://${dodf.json.linkJornal}" target="blank_">${dodf.json.tituloSangria}</a></p>
-                ${doc.texto}
-                </article>`)
-              }
-            })))
-      if (counter == 0) {
-        document.querySelector("#NadaPesquisado p").innerText = "Nenhum resultado encontrado!"
-      } else {
-        document.body.innerHTML = document.body.innerHTML.replaceAll(txt, `<span style="background-color: yellow;">${txt}</span>`)
-      }
-    } else {
-      console.log("Input VAZIO!")
-      document.querySelector("#NadaPesquisado p").innerText = "Input VAZIO!"
-      alert("Insira os TERMOS da pesquisa!")
-    }
+            & p:first-child {
+                text-align: center;
 
-  }
+                a {
+                    background-color: bisque;
+                }
+            }
+        }
+    </style>
 
-      function searchDODFPrev() {
-    const txt = document.getElementById('termos').value
+    <script>
 
-    if (txt !== "") {
-      document.getElementById("resultado").innerHTML = ""
-      for (const [idx, url] of queryJournals.entries()) {
-    const dodf = await fetch(url).then(r => r.json());
-//     console.log(`Received Todo ${idx+1}:`, todo);
-        let counter = 0
-	Object.values(dodf.json.INFO)
-        .forEach(sessao => Object.values(sessao)
-          .forEach(org => Object.values(org.documentos)
-            .forEach(doc => {
-              if (doc.texto.includes(txt)) {
-                counter++
-                doc.texto.replaceAll(txt, `<span style="background-color: yellow;">${txt}</span>`)
-                // console.log(doc.texto)
-                document.getElementById('resultado').insertAdjacentHTML('beforeend', `
-                <article>
-                <p><a href="https://${dodf.json.linkJornal}" target="blank_">${dodf.json.tituloSangria}</a></p>
-                ${doc.texto}
-                </article>`)
-              }
-            })))
-      if (counter == 0) {
-        document.querySelector("#NadaPesquisado p").innerText = "Nenhum resultado encontrado!"
-      } else {
-        document.body.innerHTML = document.body.innerHTML.replaceAll(txt, `<span style="background-color: yellow;">${txt}</span>`)
-	console.log(`${dodf.json.tituloSangria} => ${counter} resultados encontrados!`)
-      }
-  }
+        (async () => {
+            dodf = await fetch("https://dodf.df.gov.br/index/jornal-json").then(r => r.json())
+            document.getElementById('termos').value = "Políticas Públicas e Gestão Governamental"
+            document.getElementById("btnSearch").click()
 
-  console.log('Finished!');
-    } else {
-      console.log("Input VAZIO!")
-      document.querySelector("#NadaPesquisado p").innerText = "Input VAZIO!"
-      alert("Insira os TERMOS da pesquisa!")
-    }
+            journals = await fetch('https://api.github.com/repos/folk-digital/dodf/contents/data')
+                .then(r => r.json())
+                .then(j => j.filter(e => e.name.endsWith('.json')))
+                .then(f => f.map(e => e.path))
+            journals.forEach(path => document.getElementById('journals').insertAdjacentHTML('beforeend', `<option selected=true value="${path}">${path.split('/')[1]}</option>`))
+        })();
 
-  }
-</script>
+        var checkbox_alljournals = document.getElementById('alljournals');
+
+        checkbox_alljournals.addEventListener('change', function () {
+            if (this.checked) {
+                console.log("Checkbox is checked..");
+                queryJournals = [...document.querySelectorAll('#journals option:checked')].map(o => o.value)
+                console.log(queryJournals)
+            } else {
+                console.log("Checkbox is not checked..");
+            }
+        });
+
+
+
+        function searchDODF() {
+            const txt = document.getElementById('termos').value
+
+            if (txt !== "") {
+                document.getElementById("resultado").innerHTML = ""
+                let counter = 0
+                Object.values(dodf.json.INFO)
+                    .forEach(sessao => Object.values(sessao)
+                        .forEach(org => Object.values(org.documentos)
+                            .forEach(doc => {
+                                if (doc.texto.includes(txt)) {
+                                    counter++
+                                    doc.texto.replaceAll(txt, `<span style="background-color: yellow;">${txt}</span>`)
+                                    // console.log(doc.texto)
+                                    document.getElementById('resultado').insertAdjacentHTML('beforeend', `
+            <article>
+              <p><a href="https://${dodf.json.linkJornal}" target="blank_">${dodf.json.tituloSangria}</a></p>
+              ${doc.texto}
+            </article>`)
+                                }
+                            })))
+                if (counter == 0) {
+                    document.querySelector("#NadaPesquisado p").innerText = "Nenhum resultado encontrado!"
+                } else {
+                    document.body.innerHTML = document.body.innerHTML.replaceAll(txt, `<span style="background-color: yellow;">${txt}</span>`)
+                }
+            } else {
+                console.log("Input VAZIO!")
+                document.querySelector("#NadaPesquisado p").innerText = "Input VAZIO!"
+                alert("Insira os TERMOS da pesquisa!")
+            }
+
+        }
+
+        async function searchDODFPrev() {
+            const txt = document.getElementById('termos').value
+
+            if (txt !== "") {
+                document.getElementById("resultado").innerHTML = ""
+                for (const [idx, url] of queryJournals.entries()) {
+                    const dodf = await fetch(url).then(r => r.json());
+                    //     console.log(`Received Todo ${idx + 1}:`, todo);
+                    let counter = 0
+                    Object.values(dodf.json.INFO)
+                        .forEach(sessao => Object.values(sessao)
+                            .forEach(org => Object.values(org.documentos)
+                                .forEach(doc => {
+                                    if (doc.texto.includes(txt)) {
+                                        counter++
+                                        doc.texto.replaceAll(txt, `<span style="background-color: yellow;">${txt}</span>`)
+                                        // console.log(doc.texto)
+                                        document.getElementById('resultado').insertAdjacentHTML('beforeend', `
+            <article>
+              <p><a href="https://${dodf.json.linkJornal}" target="blank_">${dodf.json.tituloSangria}</a></p>
+              ${doc.texto}
+            </article>`)
+                                    }
+                                })))
+                    if (counter == 0) {
+                        document.querySelector("#NadaPesquisado p").innerText = "Nenhum resultado encontrado!"
+                    } else {
+                        document.body.innerHTML = document.body.innerHTML.replaceAll(txt, `<span style="background-color: yellow;">${txt}</span>`)
+                        console.log(`${dodf.json.tituloSangria} => ${counter} resultados encontrados!`)
+                    }
+                }
+
+                console.log('Finished!');
+            } else {
+                console.log("Input VAZIO!")
+                document.querySelector("#NadaPesquisado p").innerText = "Input VAZIO!"
+                alert("Insira os TERMOS da pesquisa!")
+            }
+
+        }
+    </script>
 
 </head>
 
 <body>
-  <fieldset>
-    <legend>Pesquisa</legend>
-    <!-- <label for="termos">termos:</label> -->
-    <label for="alljournals" style="">Search All</label><input type="checkbox" name="alljournals" id="alljournals"><fieldset id="fsetJournals">
-    <legend>Edições Anteriores</legend>
-    <select multiple="" style="max-width:90%;" id="journals" name="journals"></select>  
-  </fieldset><input type="text" name="termos" id="termos">
-    <br>
-    <button id="btnSearch" onclick="searchDODF()">Pesquisar!</button>
-  </fieldset>
-  <fieldset>
-    <legend>Resultado</legend>
-    <section id="resultado">
-      <article id="NadaPesquisado">
-        <p>Nada pesquisado!</p>
-      </article>
-    </section>
-  </fieldset>
+    <fieldset>
+        <legend>Pesquisa</legend>
+        <!-- <label for="termos">termos:</label> -->
+        <label for="alljournals">Search All</label><input type="checkbox" name="alljournals" id="alljournals">
+        <fieldset id="fsetJournals">
+            <legend>Edições Anteriores</legend>
+            <select multiple="" style="max-width:90%;" id="journals" name="journals"></select>
+        </fieldset><input type="text" name="termos" id="termos">
+        <br>
+        <button id="btnSearch" onclick="searchDODF()">Pesquisar!</button>
+    </fieldset>
+    <fieldset>
+        <legend>Resultado</legend>
+        <section id="resultado">
+            <article id="NadaPesquisado">
+                <p>Nada pesquisado!</p>
+            </article>
+        </section>
+    </fieldset>
 </body>
 <script>
-  document.getElementById('termos').value = "Políticas Públicas e Gestão Governamental"
-  document.getElementById("btnSearch").click()
+    document.getElementById('termos').value = "Políticas Públicas e Gestão Governamental"
+    document.getElementById("btnSearch").click()
 </script>
+
 </html>
