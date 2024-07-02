@@ -49,29 +49,7 @@
 
         (async () => {
             dodf = await fetch("https://dodf.df.gov.br/index/jornal-json").then(r => r.json())
-            document.getElementById('termos').value = "Políticas Públicas e Gestão Governamental"
-            document.getElementById("btnSearch").click()
-
-            journals = await fetch('https://api.github.com/repos/folk-digital/dodf/contents/data')
-                .then(r => r.json())
-                .then(j => j.filter(e => e.name.endsWith('.json')))
-                .then(f => f.map(e => e.path))
-            journals.forEach(path => document.getElementById('journals').insertAdjacentHTML('beforeend', `<option selected=true value="${path}">${path.split('/')[1]}</option>`))
         })();
-
-        var checkbox_alljournals = document.getElementById('alljournals');
-
-        checkbox_alljournals.addEventListener('change', function () {
-            if (this.checked) {
-                console.log("Checkbox is checked..");
-                queryJournals = [...document.querySelectorAll('#journals option:checked')].map(o => o.value)
-                console.log(queryJournals)
-            } else {
-                console.log("Checkbox is not checked..");
-            }
-        });
-
-
 
         function searchDODF() {
             const txt = document.getElementById('termos').value
@@ -175,6 +153,27 @@
 <script>
     document.getElementById('termos').value = "Políticas Públicas e Gestão Governamental"
     document.getElementById("btnSearch").click()
+
+    (async () => {
+            journals = await fetch('https://api.github.com/repos/folk-digital/dodf/contents/data')
+                .then(r => r.json())
+                .then(j => j.filter(e => e.name.endsWith('.json')))
+                .then(f => f.map(e => e.path))
+            journals.forEach(path => document.getElementById('journals').insertAdjacentHTML('beforeend', `<option selected=true value="${path}">${path.split('/')[1]}</option>`))
+        })();
+
+        var checkbox_alljournals = document.getElementById('alljournals');
+
+        checkbox_alljournals.addEventListener('change', function () {
+            if (this.checked) {
+                console.log("Checkbox is checked..");
+                queryJournals = [...document.querySelectorAll('#journals option:checked')].map(o => o.value)
+                console.log(queryJournals)
+            } else {
+                console.log("Checkbox is not checked..");
+            }
+        });
+
 </script>
 
 </html>
