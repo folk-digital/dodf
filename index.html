@@ -57,35 +57,38 @@
         function searchDODF() {
             const txt = document.getElementById('termos').value
 
-            if (txt !== "") {
-                document.getElementById("resultado").innerHTML = ""
-                let counter = 0
-                Object.values(dodf.json.INFO)
-                    .forEach(sessao => Object.values(sessao)
-                        .forEach(org => Object.values(org.documentos)
-                            .forEach(doc => {
-                                if (doc.texto.includes(txt)) {
-                                    counter++
-                                    doc.texto.replaceAll(txt, `<span style="background-color: yellow;">${txt}</span>`)
-                                    // console.log(doc.texto)
-                                    document.getElementById('resultado').insertAdjacentHTML('beforeend', `
+            if (document.getElementById('alljournals').checked) {
+                searchDODFPrev()
+            } else {
+                if (txt !== "") {
+                    document.getElementById("resultado").innerHTML = ""
+                    let counter = 0
+                    Object.values(dodf.json.INFO)
+                        .forEach(sessao => Object.values(sessao)
+                            .forEach(org => Object.values(org.documentos)
+                                .forEach(doc => {
+                                    if (doc.texto.includes(txt)) {
+                                        counter++
+                                        doc.texto.replaceAll(txt, `<span style="background-color: yellow;">${txt}</span>`)
+                                        // console.log(doc.texto)
+                                        document.getElementById('resultado').insertAdjacentHTML('beforeend', `
             <article>
               <p><a href="https://${dodf.json.linkJornal}" target="blank_">${dodf.json.tituloSangria}</a></p>
               ${doc.texto}
             </article>`)
-                                }
-                            })))
-                if (counter == 0) {
-                    document.querySelector("#NadaPesquisado p").innerText = "Nenhum resultado encontrado!"
+                                    }
+                                })))
+                    if (counter == 0) {
+                        document.querySelector("#NadaPesquisado p").innerText = "Nenhum resultado encontrado!"
+                    } else {
+                        document.body.innerHTML = document.body.innerHTML.replaceAll(txt, `<span style="background-color: yellow;">${txt}</span>`)
+                    }
                 } else {
-                    document.body.innerHTML = document.body.innerHTML.replaceAll(txt, `<span style="background-color: yellow;">${txt}</span>`)
+                    console.log("Input VAZIO!")
+                    document.querySelector("#NadaPesquisado p").innerText = "Input VAZIO!"
+                    alert("Insira os TERMOS da pesquisa!")
                 }
-            } else {
-                console.log("Input VAZIO!")
-                document.querySelector("#NadaPesquisado p").innerText = "Input VAZIO!"
-                alert("Insira os TERMOS da pesquisa!")
             }
-
         }
 
         async function searchDODFPrev() {
@@ -93,6 +96,7 @@
 
             if (txt !== "") {
                 document.getElementById("resultado").innerHTML = ""
+                queryJournals = [...document.querySelectorAll('#journals option:checked')].map(o => o.value)
                 for (const [idx, url] of queryJournals.entries()) {
                     const dodf = await fetch(url).then(r => r.json());
                     //     console.log(`Received Todo ${idx + 1}:`, todo);
@@ -113,7 +117,7 @@
                                     }
                                 })))
                     if (counter == 0) {
-                        document.querySelector("#NadaPesquisado p").innerText = "Nenhum resultado encontrado!"
+                        document.getElementById('resultado').insertAdjacentHTML('beforeend', `<article><p><a href="https://${dodf.json.linkJornal}" target="blank_">${dodf.json.tituloSangria}</a></p><p>Nenhum resultado encontrado!</p></article>`)
                     } else {
                         document.body.innerHTML = document.body.innerHTML.replaceAll(txt, `<span style="background-color: yellow;">${txt}</span>`)
                         console.log(`${dodf.json.tituloSangria} => ${counter} resultados encontrados!`)
@@ -154,9 +158,6 @@
     </fieldset>
 </body>
 <script>
-    // document.getElementById('termos').value = "Políticas Públicas e Gestão Governamental";
-    // document.getElementById("btnSearch").click();
-
     async function storeAllJournals() {
         journals = await fetch('https://api.github.com/repos/folk-digital/dodf/contents/data')
             .then(r => r.json())
@@ -165,20 +166,6 @@
         journals.forEach(path => document.getElementById('journals').insertAdjacentHTML('beforeend', `<option selected=true value="${path}">${path.split('/')[1]}</option>`))
         console.log('Select AllJournals STORED!')
     }; storeAllJournals()
-
-    var checkbox_alljournals = document.getElementById('alljournals');
-
-    checkbox_alljournals.addEventListener('change', function () {
-        if (this.checked) {
-            console.log("Checkbox is checked..");
-            queryJournals = [...document.querySelectorAll('#journals option:checked')].map(o => o.value)
-            console.log(queryJournals)
-        } else {
-            console.log("Checkbox is not checked..");
-            storeAllJournals()
-        }
-    });
-
 </script>
 
 </html>
