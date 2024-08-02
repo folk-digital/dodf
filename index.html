@@ -96,7 +96,11 @@
 
             if (txt !== "") {
                 document.getElementById("resultado").innerHTML = ""
-                queryJournals = [...document.querySelectorAll('#journals option:checked')].map(o => o.value)
+                let  queryJournals
+                selectedOptions = [...document.querySelectorAll('#journals option:checked')].map(o => o.value)
+                if (selectedOptions.includes('allJournals') {
+                    queryJournals = [...document.querySelectorAll('#journals option')].map(o => o.value)
+                } else {queryJournals = selectedOptions}
                 for (const [idx, url] of queryJournals.entries()) {
                     const dodf = await fetch(url).then(r => r.json());
                     //     console.log(`Received Todo ${idx + 1}:`, todo);
@@ -143,7 +147,9 @@
         <label for="alljournals">Search All</label><input type="checkbox" name="alljournals" id="alljournals">
         <fieldset id="fsetJournals">
             <legend>Edições Anteriores</legend>
-            <select multiple="" style="max-width:90%;" id="journals" name="journals"></select>
+            <select multiple="" style="max-width:90%;" id="journals" name="journals">
+                <option selected="false" value="allJournals">All Journals</option>
+            </select>
         </fieldset><input type="text" name="termos" id="termos">
         <br>
         <button id="btnSearch" onclick="searchDODF()">Pesquisar!</button>
@@ -163,7 +169,7 @@
             .then(r => r.json())
             .then(j => j.filter(e => e.name.endsWith('.json')))
             .then(f => f.map(e => e.path))
-        journals.forEach(path => document.getElementById('journals').insertAdjacentHTML('beforeend', `<option selected=true value="${path}">${path.split('/')[1]}</option>`))
+        journals.forEach(path => document.getElementById('journals').insertAdjacentHTML('afterbegin', `<option selected=false value="${path}">${path.split('/')[1]}</option>`))
         console.log('Select AllJournals STORED!')
     }; storeAllJournals()
 </script>
