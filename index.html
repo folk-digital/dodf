@@ -148,7 +148,7 @@
         <fieldset id="fsetJournals">
             <legend>Edições Anteriores</legend>
             <select multiple="" style="max-width:90%;" id="journals" name="journals">
-                <option selected="false" value="allJournals">All Journals</option>
+                <option value="allJournals">All Journals</option>
             </select>
         </fieldset><input type="text" name="termos" id="termos">
         <br>
@@ -169,7 +169,8 @@
             .then(r => r.json())
             .then(j => j.filter(e => e.name.endsWith('.json')))
             .then(f => f.map(e => e.path))
-        journals.forEach(path => document.getElementById('journals').insertAdjacentHTML('afterbegin', `<option value="${path}">${path.split('/')[1]}</option>`))
+        journalsReversed = journals.reverse()
+        journalsReversed.forEach(path => document.getElementById('journals').insertAdjacentHTML('beforeend', `<option value="${path}">${path.split('/')[1]}</option>`))
         console.log('Select AllJournals STORED!')
     }; storeAllJournals()
 </script>
