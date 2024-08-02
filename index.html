@@ -169,7 +169,7 @@
             .then(r => r.json())
             .then(j => j.filter(e => e.name.endsWith('.json')))
             .then(f => f.map(e => e.path))
-        journals.forEach(path => document.getElementById('journals').insertAdjacentHTML('afterbegin', `<option selected=false value="${path}">${path.split('/')[1]}</option>`))
+        journals.forEach(path => document.getElementById('journals').insertAdjacentHTML('afterbegin', `<option value="${path}">${path.split('/')[1]}</option>`))
         console.log('Select AllJournals STORED!')
     }; storeAllJournals()
 </script>
