@@ -99,7 +99,7 @@
                 let  queryJournals
                 selectedOptions = [...document.querySelectorAll('#journals option:checked')].map(o => o.value)
                 if (selectedOptions.includes('allJournals')) {
-                    queryJournals = [...document.querySelectorAll('#journals option')].map(o => o.value)
+                    queryJournals = [...document.querySelectorAll('#journals option')].map(o => o.value).splice(1)
                 } else {queryJournals = selectedOptions}
                 for (const [idx, url] of queryJournals.entries()) {
                     const dodf = await fetch(url).then(r => r.json());
